@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { planFromPriceId, type PlanId } from "@/lib/billing/plans";
 import { verifyStripeSignature } from "@/lib/billing/stripe";
+import { recordAuditEvent } from "@/lib/audit";
 
 export const runtime = "nodejs";
 
@@ -28,7 +29,7 @@ async function findOrganizationId(admin: ReturnType<typeof createAdminClient>, o
 
 async function syncSubscription(admin: ReturnType<typeof createAdminClient>, object: any, forcedStatus?: string) {
   const organizationId = await findOrganizationId(admin, object);
-  if (!organizationId) return;
+  if (!organizationId) return null;
 
   const customerId = asString(object?.customer);
   const subscriptionId = asString(object?.subscription) || (object?.object === "subscription" ? asString(object?.id) : null);
@@ -50,6 +51,7 @@ async function syncSubscription(admin: ReturnType<typeof createAdminClient>, obj
     updated_at: new Date().toISOString(),
   }, { onConflict: "organization_id" });
   if (error) throw new Error(error.message);
+  return organizationId;
 }
 
 export async function POST(request: Request) {
@@ -78,32 +80,34 @@ export async function POST(request: Request) {
   if (!claimed) return NextResponse.json({ received: true, duplicate: true });
 
   const object = event?.data?.object;
+  let organizationId: string | null = null;
   try {
     switch (eventType) {
       case "checkout.session.completed":
-        await syncSubscription(admin, {
+        organizationId = await syncSubscription(admin, {
           ...object,
           status: object?.payment_status === "paid" ? "active" : "pending",
         });
         break;
       case "customer.subscription.created":
       case "customer.subscription.updated":
-        await syncSubscription(admin, object);
+        organizationId = await syncSubscription(admin, object);
         break;
       case "customer.subscription.deleted":
-        await syncSubscription(admin, object, "canceled");
+        organizationId = await syncSubscription(admin, object, "canceled");
         break;
       case "invoice.paid": {
-        const organizationId = await findOrganizationId(admin, object);
+        organizationId = await findOrganizationId(admin, object);
         if (organizationId) await admin.from("subscriptions").update({ status: "active", updated_at: new Date().toISOString() }).eq("organization_id", organizationId);
         break;
       }
       case "invoice.payment_failed": {
-        const organizationId = await findOrganizationId(admin, object);
+        organizationId = await findOrganizationId(admin, object);
         if (organizationId) await admin.from("subscriptions").update({ status: "past_due", updated_at: new Date().toISOString() }).eq("organization_id", organizationId);
         break;
       }
       default:
+        organizationId = await findOrganizationId(admin, object);
         break;
     }
 
@@ -112,6 +116,17 @@ export async function POST(request: Request) {
       processed_at: new Date().toISOString(),
       error_message: null,
     }).eq("id", eventId);
+
+    if (organizationId) {
+      await recordAuditEvent(admin, {
+        organizationId,
+        actorType: "system",
+        eventType: `billing.${eventType.replaceAll(".", "_")}`,
+        entityType: "subscription",
+        entityId: asString(object?.subscription) || asString(object?.id),
+        metadata: { stripeEventId: eventId },
+      });
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Webhook handling failed";
     console.error("Stripe webhook handling failed", eventType, error);

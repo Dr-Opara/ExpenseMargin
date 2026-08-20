@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { addProductAlias } from "@/lib/matching";
 import { createCostAlertForItem } from "@/lib/invoices/alerts";
 import { sendInvoiceAlertSummary } from "@/lib/invoices/notifications";
+import { recordAuditEvent } from "@/lib/audit";
 
 export async function resolveMatchReview(
   admin: SupabaseClient,
@@ -52,6 +53,14 @@ export async function resolveMatchReview(
   }).eq("id", review.id);
 
   await createCostAlertForItem(admin, review.invoice_item_id);
+  await recordAuditEvent(admin, {
+    organizationId: review.organization_id,
+    userId: input.userId,
+    eventType: input.action === "confirm" ? "product_match.confirmed" : "product_match.created_new",
+    entityType: "invoice",
+    entityId: review.invoice_id,
+    metadata: { reviewId: review.id, productId, invoiceItemId: review.invoice_item_id },
+  });
 
   const { count } = await admin
     .from("match_reviews")

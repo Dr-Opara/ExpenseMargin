@@ -4,6 +4,7 @@ import { matchOrCreateProduct } from "@/lib/matching";
 import { normalizeText } from "@/lib/normalize";
 import { createCostAlertForItem } from "@/lib/invoices/alerts";
 import { sendInvoiceAlertSummary } from "@/lib/invoices/notifications";
+import { recordAuditEvent } from "@/lib/audit";
 
 export type ProcessResult = {
   invoiceId: string;
@@ -30,7 +31,6 @@ export async function processInvoice(admin: SupabaseClient, invoiceId: string): 
     mimeType: invoice.mime_type || blob.type || "application/pdf",
   });
 
-  // Retries start from a clean set of derived records for this invoice.
   await admin.from("invoice_items").delete().eq("invoice_id", invoiceId);
 
   const normalizedSupplier = normalizeText(parsed.supplier);
@@ -125,6 +125,15 @@ export async function processInvoice(admin: SupabaseClient, invoiceId: string): 
     processing_started_at: null,
     error_message: null,
   }).eq("id", invoiceId);
+
+  await recordAuditEvent(admin, {
+    organizationId: invoice.organization_id,
+    actorType: "system",
+    eventType: "invoice.processed",
+    entityType: "invoice",
+    entityId: invoiceId,
+    metadata: { status, items: parsed.items.length, alertsCreated, reviewsCreated },
+  });
 
   if (status === "complete") {
     await sendInvoiceAlertSummary(admin, invoiceId).catch((error) => {

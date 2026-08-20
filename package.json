@@ -1,6 +1,6 @@
 {
   "name": "expensemargin",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,6 +13,8 @@
   "dependencies": {
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@vercel/analytics": "latest",
+    "@vercel/speed-insights": "latest",
     "lucide-react": "latest",
     "next": "latest",
     "react": "latest",
