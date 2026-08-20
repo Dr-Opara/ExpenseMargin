@@ -27,9 +27,9 @@ Notifications:
 ## Pricing at launch
 
 - Free — $0/month, 5 invoices/month
-- Business — $99/month, 100 invoices/month
-- Pro — $249/month, 500 invoices/month
-- Scale — $499/month, 2,000 invoices/month
+- Business Plus — $99/month, 100 invoices/month
+- Business Pro — $249/month, 500 invoices/month
+- Business Scale — $449/month, 2,000 invoices/month
 - Higher volume — custom pricing
 
 ## External account configuration
@@ -42,7 +42,7 @@ Set the production Site URL to the canonical ExpenseMargin domain and allow the 
 Keep email confirmation enabled for public signup unless a deliberate launch decision disables it.
 
 ### Stripe
-Create recurring monthly prices for Business ($99), Pro ($249), and Scale ($499), configure the corresponding Vercel environment variables, and point the production webhook to:
+Create recurring monthly prices for Business Plus ($99), Business Pro ($249), and Business Scale ($449), configure the corresponding Vercel environment variables, and point the production webhook to:
 
 `https://<expensemargin-domain>/api/stripe/webhook`
 
@@ -62,7 +62,7 @@ Set `NEXT_PUBLIC_APP_URL` to the canonical production URL, verify the cron route
 4. Verify extraction, normalization, product matching/review, and cost alerts.
 5. Verify invoice-detail, supplier, product, alert, review, activity, billing, and settings views.
 6. Verify Free plan enforcement at 5 invoices/month.
-7. Test Business, Pro, and Scale Stripe checkout and customer portal.
+7. Test Business Plus, Business Pro, and Business Scale Stripe checkout and customer portal.
 8. Confirm Stripe webhook idempotency and subscription state changes.
 9. Confirm Resend alert delivery and delivery-history logging.
 10. Test password reset and sign-out.
