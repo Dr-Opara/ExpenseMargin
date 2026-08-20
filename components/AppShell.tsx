@@ -10,6 +10,7 @@ const links = [
   ["Alerts", "/alerts"],
   ["Review", "/review"],
   ["Billing", "/billing"],
+  ["Settings", "/settings"],
 ];
 
 export async function AppShell({ children, active }: { children: React.ReactNode; active: string }) {
