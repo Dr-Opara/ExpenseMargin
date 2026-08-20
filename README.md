@@ -18,7 +18,7 @@ ExpenseMargin is a B2B cost-intelligence SaaS that compares recurring supplier i
 - Background invoice retry worker using a secured Vercel Cron endpoint
 - Resend email alerts after completed invoice analysis
 - Stripe Checkout, subscription webhooks, and customer billing portal
-- Free / Business / Pro / Scale invoice-volume plans
+- Free / Business Plus / Business Pro / Business Scale invoice-volume plans
 - Tenant activity history and audit logging
 - Health and readiness endpoints, request IDs, and production security headers
 - Vercel Analytics and Speed Insights
@@ -81,9 +81,9 @@ The included deterministic validators cover:
 ## Current launch plans
 
 - Free: $0/month, 5 invoices/month
-- Business: $99/month, 100 invoices/month
-- Pro: $249/month, 500 invoices/month
-- Scale: $499/month, 2,000 invoices/month
+- Business Plus: $99/month, 100 invoices/month
+- Business Pro: $249/month, 500 invoices/month
+- Business Scale: $449/month, 2,000 invoices/month
 - Higher-volume customers: custom pricing
 
 Stripe Price IDs are environment variables so commercial pricing can be managed independently from application secrets.
