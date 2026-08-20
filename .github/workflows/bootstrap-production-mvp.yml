@@ -1,0 +1,36 @@
+name: Bootstrap ExpenseMargin Production MVP
+
+on:
+  push:
+    branches:
+      - feat/production-mvp
+    paths:
+      - .bootstrap/ExpenseMargin.bundle.b64
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout bootstrap branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore production MVP from bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode .bootstrap/ExpenseMargin.bundle.b64 > /tmp/ExpenseMargin.bundle
+          git clone -b feat/production-mvp /tmp/ExpenseMargin.bundle /tmp/ExpenseMargin-MVP
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          rsync -a --exclude='.git' /tmp/ExpenseMargin-MVP/ ./
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: import ExpenseMargin production MVP"
+          git push origin HEAD:feat/production-mvp
