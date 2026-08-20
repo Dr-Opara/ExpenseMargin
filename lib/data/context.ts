@@ -7,7 +7,7 @@ export type OrganizationContext = {
   industry: string | null;
   notificationEmail: string | null;
   role: "owner" | "admin" | "member";
-  plan: "free" | "business" | "pro";
+  plan: "free" | "business" | "pro" | "scale";
   subscriptionStatus: string;
   stripeCustomerId: string | null;
 };
@@ -55,6 +55,7 @@ export async function getOrganizationContext(): Promise<OrganizationContext | nu
 }
 
 export function planInvoiceLimit(plan: OrganizationContext["plan"]): number {
+  if (plan === "scale") return 2000;
   if (plan === "pro") return 500;
   if (plan === "business") return 100;
   return 5;

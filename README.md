@@ -4,9 +4,9 @@
 
 ExpenseMargin is a B2B cost-intelligence SaaS that compares recurring supplier invoice line items, detects unit-cost increases, and estimates the monthly and annual impact on business margins.
 
-## MVP capabilities
+## Core capabilities
 
-- Responsive marketing site and desktop-first SaaS dashboard
+- Responsive marketing site and SaaS dashboard
 - Supabase authentication and private organization workspaces
 - Tenant-isolated database and private invoice storage with Row Level Security
 - PDF/JPG/PNG invoice upload with plan-based monthly limits
@@ -18,8 +18,11 @@ ExpenseMargin is a B2B cost-intelligence SaaS that compares recurring supplier i
 - Background invoice retry worker using a secured Vercel Cron endpoint
 - Resend email alerts after completed invoice analysis
 - Stripe Checkout, subscription webhooks, and customer billing portal
-- Free / Business / Pro invoice-volume plans
-- Health endpoint and production security headers
+- Free / Business / Pro / Scale invoice-volume plans
+- Tenant activity history and audit logging
+- Health and readiness endpoints, request IDs, and production security headers
+- Vercel Analytics and Speed Insights
+- Public pricing, security, privacy, terms, sitemap, and customer auth recovery flows
 - GitHub Actions CI workflow
 
 ## Architecture principle
@@ -28,14 +31,11 @@ AI interprets messy invoice data. ExpenseMargin application code performs all fi
 
 ## Local setup
 
-1. Install dependencies:
-   `npm install`
-2. Copy environment variables:
-   `cp .env.example .env.local`
+1. Install dependencies: `npm install`
+2. Copy environment variables: `cp .env.example .env.local`
 3. Create a Supabase project and run SQL migrations in order.
 4. Add the required environment values.
-5. Run:
-   `npm run dev`
+5. Run: `npm run dev`
 6. Open `http://localhost:3000`.
 
 ## Required environment variables
@@ -56,19 +56,12 @@ Production integrations:
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_BUSINESS_PRICE_ID`
 - `STRIPE_PRO_PRICE_ID`
+- `STRIPE_SCALE_PRICE_ID`
 - `CRON_SECRET`
 
 ## Database migrations
 
-Run in order:
-
-1. `001_initial_schema.sql`
-2. `002_onboarding_and_storage.sql`
-3. `003_product_uniqueness.sql`
-4. `004_production_workflows.sql`
-5. `005_query_indexes.sql`
-6. `006_billing_and_job_claims.sql`
-7. `007_normalized_quantities.sql`
+Run all files in `supabase/migrations` in numeric order. v1.0.0 currently includes migrations `001` through `013`.
 
 ## Validation
 
@@ -87,19 +80,21 @@ The included deterministic validators cover:
 
 ## Current launch plans
 
-- Free: 5 invoices/month
-- Business: $39/month, 100 invoices/month
-- Pro: $99/month, 500 invoices/month
+- Free: $0/month, 5 invoices/month
+- Business: $99/month, 100 invoices/month
+- Pro: $249/month, 500 invoices/month
+- Scale: $499/month, 2,000 invoices/month
+- Higher-volume customers: custom pricing
 
-Stripe Price IDs are environment variables so pricing can be changed without changing code.
+Stripe Price IDs are environment variables so commercial pricing can be managed independently from application secrets.
 
 ## Deployment
 
 Recommended production stack:
-- Vercel: Next.js hosting and Cron
+- Vercel: Next.js hosting, Cron, Analytics, and Speed Insights
 - Supabase: Auth, Postgres, Storage
 - OpenAI API: invoice extraction
 - Resend: transactional alerts
 - Stripe: subscriptions and billing portal
 
-See `DEVELOPMENT.md` and `ARCHITECTURE.md` for setup and implementation details.
+See `DEVELOPMENT.md`, `ARCHITECTURE.md`, and `LAUNCH.md` for setup, implementation, and launch-readiness details.
