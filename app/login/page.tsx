@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { Brand } from "@/components/Brand";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -34,7 +35,7 @@ export default function LoginPage() {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link>
+        <Brand />
         <h1>Welcome back</h1>
         <p>Sign in to monitor supplier costs and margin impact.</p>
         {signedOut && <div className="form-success">You have been signed out.</div>}
