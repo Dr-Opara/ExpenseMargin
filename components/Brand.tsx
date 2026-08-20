@@ -13,18 +13,13 @@ export function Brand({
   return (
     <Link href={href} className={`brand ${className}`.trim()} aria-label="ExpenseMargin home">
       <Image
-        src="/brand/expensemargin-rabbit.webp"
-        alt=""
-        width={40}
-        height={40}
-        className="brand-rabbit"
+        src={compact ? "/brand/expensemargin-icon.png" : "/brand/expensemargin-logo.png"}
+        alt="ExpenseMargin"
+        width={compact ? 42 : 310}
+        height={compact ? 40 : 56}
+        className={compact ? "brand-icon" : "brand-logo"}
         priority={href === "/"}
       />
-      {!compact && (
-        <span className="brand-wordmark" aria-hidden="true">
-          <span>Expense</span><span className="brand-margin">Margin</span>
-        </span>
-      )}
     </Link>
   );
 }
