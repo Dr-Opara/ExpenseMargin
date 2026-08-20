@@ -13,17 +13,25 @@ export default function SignupPage() {
     event.preventDefault();
     setLoading(true);
     setError("");
+    setMessage("");
     const data = new FormData(event.currentTarget);
     const supabase = createClient();
+    const emailRedirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
     const result = await supabase.auth.signUp({
       email: String(data.get("email") || ""),
       password: String(data.get("password") || ""),
-      options: { data: { full_name: String(data.get("name") || "") } },
+      options: {
+        data: { full_name: String(data.get("name") || "") },
+        emailRedirectTo,
+      },
     });
     if (result.error) {
       setError(result.error.message);
+    } else if (result.data.session) {
+      window.location.href = "/onboarding";
+      return;
     } else {
-      setMessage("Account created. Check your email if confirmation is enabled, then sign in.");
+      setMessage("Account created. Check your email to confirm your address, then continue to ExpenseMargin.");
     }
     setLoading(false);
   }
@@ -33,7 +41,7 @@ export default function SignupPage() {
       <div className="auth-card">
         <Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link>
         <h1>Create your account</h1>
-        <p>Start by uploading two invoices from the same supplier.</p>
+        <p>Start free with up to 5 supplier invoices per month.</p>
         <form onSubmit={submit} className="auth-form">
           <label>Name<input name="name" required autoComplete="name" /></label>
           <label>Email<input name="email" type="email" required autoComplete="email" /></label>
@@ -42,6 +50,7 @@ export default function SignupPage() {
           {message && <div className="form-success">{message}</div>}
           <button className="btn primary" disabled={loading}>{loading ? "Creating…" : "Create account"}</button>
         </form>
+        <div className="auth-foot">By creating an account you agree to the <Link href="/terms"><strong>Terms</strong></Link> and acknowledge the <Link href="/privacy"><strong>Privacy Policy</strong></Link>.</div>
         <div className="auth-foot">Already have an account? <Link href="/login"><strong>Sign in</strong></Link></div>
       </div>
     </div>
