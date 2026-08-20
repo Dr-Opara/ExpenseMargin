@@ -1,49 +1,71 @@
 import Link from "next/link";
 import { getOrganizationContext } from "@/lib/data/context";
+import { PLANS } from "@/lib/billing/plans";
 import { APP_VERSION } from "@/lib/version";
 
-const links = [
-  ["Dashboard", "/dashboard"],
-  ["Invoices", "/invoices"],
-  ["Suppliers", "/suppliers"],
-  ["Products", "/products"],
-  ["Alerts", "/alerts"],
-  ["Review", "/review"],
-  ["Activity", "/activity"],
-  ["Billing", "/billing"],
-  ["Settings", "/settings"],
+const navGroups = [
+  {
+    label: "Cost monitoring",
+    links: [
+      ["Invoices", "/invoices"],
+      ["Suppliers", "/suppliers"],
+      ["Products", "/products"],
+      ["Alerts", "/alerts"],
+    ],
+  },
+  {
+    label: "Operations",
+    links: [
+      ["Review", "/review"],
+      ["Activity", "/activity"],
+    ],
+  },
 ];
 
 export async function AppShell({ children, active }: { children: React.ReactNode; active: string }) {
   const context = await getOrganizationContext();
+  const planName = context ? PLANS[context.plan].name : null;
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand">
+        <Link href="/dashboard" className="brand app-brand">
           <span className="brand-mark">EM</span>
           <span>ExpenseMargin</span>
         </Link>
+
         <nav className="side-nav">
-          {links.map(([label, href]) => (
-            <Link key={href} href={href} className={`side-link ${active === label ? "active" : ""}`}>
-              {label}
-            </Link>
+          <Link href="/dashboard" className={`side-link ${active === "Dashboard" ? "active" : ""}`}>Dashboard</Link>
+          {navGroups.map((group) => (
+            <div className="side-group" key={group.label}>
+              <div className="side-group-label">{group.label}</div>
+              {group.links.map(([label, href]) => (
+                <Link key={href} href={href} className={`side-link ${active === label ? "active" : ""}`}>
+                  {label}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
+
         <div className="side-footer">
-          <div>Track expenses. Protect margins.</div>
-          {context && <div style={{marginTop:8}}>{context.plan.toUpperCase()} plan</div>}
-          <div style={{marginTop:8,opacity:.7}}>v{APP_VERSION}</div>
-          <form action="/auth/signout" method="post" style={{marginTop:12}}>
-            <button type="submit" className="btn" style={{width:"100%"}}>Sign out</button>
+          <div className="side-secondary-links">
+            <Link href="/billing" className={active === "Billing" ? "active" : ""}>Billing</Link>
+            <Link href="/settings" className={active === "Settings" ? "active" : ""}>Settings</Link>
+          </div>
+          {planName && <div className="side-plan">{planName} plan</div>}
+          <div className="side-version">v{APP_VERSION}</div>
+          <form action="/auth/signout" method="post">
+            <button type="submit" className="signout-link">Sign out</button>
           </form>
         </div>
       </aside>
+
       <main className="main">
         <div className="topbar">
-          <div><strong>{context?.organizationName ?? "ExpenseMargin"}</strong></div>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            {context && <span className="badge good">{context.plan}</span>}
+          <div className="topbar-org">{context?.organizationName ?? "ExpenseMargin"}</div>
+          <div className="topbar-actions">
+            {planName && <span className="plan-label">{planName}</span>}
             <Link href="/invoices" className="btn primary">Upload invoices</Link>
           </div>
         </div>
