@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getOrganizationContext } from "@/lib/data/context";
+import { APP_VERSION } from "@/lib/version";
 
 const links = [
   ["Dashboard", "/dashboard"],
@@ -30,6 +31,7 @@ export async function AppShell({ children, active }: { children: React.ReactNode
         <div className="side-footer">
           <div>Track expenses. Protect margins.</div>
           {context && <div style={{marginTop:8}}>{context.plan.toUpperCase()} plan</div>}
+          <div style={{ marginTop: 8, opacity: .7 }}>v{APP_VERSION}</div>
         </div>
       </aside>
       <main className="main">
