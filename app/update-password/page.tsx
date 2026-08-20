@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { Brand } from "@/components/Brand";
 import { createClient } from "@/lib/supabase/client";
 
 export default function UpdatePasswordPage() {
@@ -30,7 +31,7 @@ export default function UpdatePasswordPage() {
 
   return (
     <div className="auth-wrap"><div className="auth-card">
-      <Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link>
+      <Brand />
       <h1>Choose a new password</h1>
       <p>Use at least 8 characters and a password you do not reuse elsewhere.</p>
       <form onSubmit={submit} className="auth-form">
