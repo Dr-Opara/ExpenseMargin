@@ -65,10 +65,21 @@ export async function POST(request: Request) {
   try { event = JSON.parse(payload); }
   catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
 
+  const eventId = asString(event?.id);
+  const eventType = asString(event?.type);
+  if (!eventId || !eventType) return NextResponse.json({ error: "Invalid Stripe event" }, { status: 400 });
+
   const admin = createAdminClient();
+  const { data: claimed, error: claimError } = await admin.rpc("claim_stripe_webhook_event", {
+    event_id: eventId,
+    event_type: eventType,
+  });
+  if (claimError) return NextResponse.json({ error: "Could not claim webhook event" }, { status: 500 });
+  if (!claimed) return NextResponse.json({ received: true, duplicate: true });
+
   const object = event?.data?.object;
   try {
-    switch (event?.type) {
+    switch (eventType) {
       case "checkout.session.completed":
         await syncSubscription(admin, {
           ...object,
@@ -95,8 +106,19 @@ export async function POST(request: Request) {
       default:
         break;
     }
+
+    await admin.from("stripe_webhook_events").update({
+      status: "processed",
+      processed_at: new Date().toISOString(),
+      error_message: null,
+    }).eq("id", eventId);
   } catch (error) {
-    console.error("Stripe webhook handling failed", event?.type, error);
+    const message = error instanceof Error ? error.message : "Webhook handling failed";
+    console.error("Stripe webhook handling failed", eventType, error);
+    await admin.from("stripe_webhook_events").update({
+      status: "failed",
+      error_message: message.slice(0, 1000),
+    }).eq("id", eventId);
     return NextResponse.json({ error: "Webhook handling failed" }, { status: 500 });
   }
 

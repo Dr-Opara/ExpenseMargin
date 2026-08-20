@@ -11,11 +11,28 @@ function money(value: number, currency = "USD") {
   catch { return `$${value.toFixed(2)}`; }
 }
 
-export async function sendInvoiceAlertSummary(admin: SupabaseClient, invoiceId: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.RESEND_FROM_EMAIL;
-  if (!apiKey || !from) return { sent: false, reason: "resend_not_configured" } as const;
+async function logDelivery(admin: SupabaseClient, input: {
+  organizationId: string;
+  invoiceId: string;
+  recipient?: string | null;
+  status: "sent" | "skipped" | "failed";
+  providerMessageId?: string | null;
+  error?: string | null;
+}) {
+  await admin.from("notification_deliveries").insert({
+    organization_id: input.organizationId,
+    invoice_id: input.invoiceId,
+    channel: "email",
+    notification_type: "cost_alert_summary",
+    recipient: input.recipient || null,
+    provider_message_id: input.providerMessageId || null,
+    status: input.status,
+    error_message: input.error ? input.error.slice(0, 1000) : null,
+    sent_at: input.status === "sent" ? new Date().toISOString() : null,
+  }).then(() => undefined, () => undefined);
+}
 
+export async function sendInvoiceAlertSummary(admin: SupabaseClient, invoiceId: string) {
   const { data: invoice } = await admin
     .from("invoices")
     .select("id,organization_id,notification_sent_at,currency,suppliers(name)")
@@ -24,7 +41,7 @@ export async function sendInvoiceAlertSummary(admin: SupabaseClient, invoiceId: 
   if (!invoice || invoice.notification_sent_at) return { sent: false, reason: "already_sent_or_missing" } as const;
 
   const [{ data: organization }, { data: alerts }] = await Promise.all([
-    admin.from("organizations").select("name,notification_email").eq("id", invoice.organization_id).single(),
+    admin.from("organizations").select("name,notification_email,notify_cost_alerts").eq("id", invoice.organization_id).single(),
     admin
       .from("cost_alerts")
       .select("percent_change,estimated_annual_impact,previous_unit_cost,current_unit_cost,products(normalized_name)")
@@ -34,7 +51,21 @@ export async function sendInvoiceAlertSummary(admin: SupabaseClient, invoiceId: 
   ]);
 
   const email = organization?.notification_email;
-  if (!email || !alerts?.length) return { sent: false, reason: "no_alerts_or_recipient" } as const;
+  if (organization?.notify_cost_alerts === false) {
+    await logDelivery(admin, { organizationId: invoice.organization_id, invoiceId, recipient: email, status: "skipped", error: "Cost alert emails disabled" });
+    return { sent: false, reason: "notifications_disabled" } as const;
+  }
+  if (!email || !alerts?.length) {
+    await logDelivery(admin, { organizationId: invoice.organization_id, invoiceId, recipient: email, status: "skipped", error: !email ? "No notification recipient" : "No cost alerts" });
+    return { sent: false, reason: "no_alerts_or_recipient" } as const;
+  }
+
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!apiKey || !from) {
+    await logDelivery(admin, { organizationId: invoice.organization_id, invoiceId, recipient: email, status: "skipped", error: "Resend is not configured" });
+    return { sent: false, reason: "resend_not_configured" } as const;
+  }
 
   const currency = invoice.currency || "USD";
   const totalImpact = alerts.reduce((sum: number, alert: any) => sum + Number(alert.estimated_annual_impact ?? 0), 0);
@@ -72,9 +103,16 @@ export async function sendInvoiceAlertSummary(admin: SupabaseClient, invoiceId: 
 
   if (!response.ok) {
     const detail = await response.text().catch(() => "");
-    throw new Error(`Resend delivery failed (${response.status}): ${detail.slice(0, 240)}`);
+    const message = `Resend delivery failed (${response.status}): ${detail.slice(0, 240)}`;
+    await logDelivery(admin, { organizationId: invoice.organization_id, invoiceId, recipient: email, status: "failed", error: message });
+    throw new Error(message);
   }
 
-  await admin.from("invoices").update({ notification_sent_at: new Date().toISOString() }).eq("id", invoiceId);
+  const payload = await response.json().catch(() => ({}));
+  const providerMessageId = typeof payload?.id === "string" ? payload.id : null;
+  await Promise.all([
+    admin.from("invoices").update({ notification_sent_at: new Date().toISOString() }).eq("id", invoiceId),
+    logDelivery(admin, { organizationId: invoice.organization_id, invoiceId, recipient: email, status: "sent", providerMessageId }),
+  ]);
   return { sent: true } as const;
 }
