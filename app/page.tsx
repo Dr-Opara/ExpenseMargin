@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Brand } from "@/components/Brand";
 
 const industries = [
   "Grocery Markets",
@@ -44,7 +45,7 @@ export default function Home() {
     <main className="marketing-shell">
       <div className="container">
         <nav className="landing-nav">
-          <Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link>
+          <Brand />
           <div className="landing-links">
             <a href="#how-it-works">How it works</a>
             <Link href="/pricing">Pricing</Link>
