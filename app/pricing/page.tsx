@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Brand } from "@/components/Brand";
 import { PLANS, type PlanId } from "@/lib/billing/plans";
 
 export const metadata: Metadata = {
@@ -7,21 +8,12 @@ export const metadata: Metadata = {
   description: "B2B pricing for supplier cost intelligence and invoice monitoring.",
 };
 
-const included = [
-  "Secure invoice storage",
-  "Supplier and product history",
-  "Normalized unit-cost tracking",
-  "Price-change alerts",
-  "Shrinkflation detection",
-  "Monthly and annual impact estimates",
-];
-
 export default function PricingPage() {
   return (
     <main className="marketing-shell">
       <div className="container">
         <nav className="landing-nav">
-          <Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link>
+          <Brand />
           <div className="landing-links"><Link href="/">Product</Link><Link href="/security">Security</Link></div>
           <div className="nav-actions"><Link className="nav-signin" href="/login">Sign in</Link><Link className="btn primary" href="/signup">Start free</Link></div>
         </nav>
