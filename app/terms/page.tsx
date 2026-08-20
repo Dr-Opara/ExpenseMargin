@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Brand } from "@/components/Brand";
 
 export const metadata: Metadata = { title: "Terms — ExpenseMargin", description: "Terms of use for ExpenseMargin." };
 
 export default function TermsPage() {
   return <div className="container">
-    <nav className="landing-nav"><Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link><div className="nav-actions"><Link className="btn" href="/privacy">Privacy</Link><Link className="btn primary" href="/signup">Start free</Link></div></nav>
+    <nav className="landing-nav"><Brand /><div className="nav-actions"><Link className="btn" href="/privacy">Privacy</Link><Link className="btn primary" href="/signup">Start free</Link></div></nav>
     <section className="page" style={{paddingLeft:0,paddingRight:0}}>
       <div className="page-head"><div><span className="eyebrow">Terms</span><h1>Terms of Use</h1><p>Effective August 20, 2026</p></div></div>
       <section className="panel"><div style={{padding:24,lineHeight:1.8}}>
