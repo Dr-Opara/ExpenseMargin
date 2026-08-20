@@ -43,8 +43,15 @@ export async function getSettingsData() {
     })),
     integrations: {
       resend: Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL),
-      stripe: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET && process.env.STRIPE_BUSINESS_PRICE_ID && process.env.STRIPE_PRO_PRICE_ID),
+      stripe: Boolean(
+        process.env.STRIPE_SECRET_KEY &&
+        process.env.STRIPE_WEBHOOK_SECRET &&
+        process.env.STRIPE_BUSINESS_PRICE_ID &&
+        process.env.STRIPE_PRO_PRICE_ID &&
+        process.env.STRIPE_SCALE_PRICE_ID
+      ),
       openai: Boolean(process.env.OPENAI_API_KEY),
+      cron: Boolean(process.env.CRON_SECRET),
     },
   };
 }
