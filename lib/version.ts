@@ -1,2 +1,2 @@
-export const APP_VERSION = "1.1.0";
-export const APP_RELEASE = "Business UX Refresh";
+export const APP_VERSION = "1.1.1";
+export const APP_RELEASE = "Industry Coverage Refresh";
