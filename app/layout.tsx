@@ -4,7 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import "./brand.css";
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://expensemargin.vercel.app";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://expensemargin.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
