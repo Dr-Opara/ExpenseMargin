@@ -1,13 +1,36 @@
 import Link from "next/link";
 
 const industries = [
-  "Dental",
-  "Auto repair",
-  "Contractors",
+  "Grocery Markets",
   "Restaurants",
-  "Cleaning",
+  "Medical Services",
+  "Dental Practices",
+  "Pharmacies",
+  "Dry Cleaners & Laundry",
   "Retail",
   "Hospitality",
+  "Auto Shops",
+  "Auto Dealerships",
+  "Contractors",
+  "Home Builders",
+  "HVAC",
+  "Plumbing",
+  "Electrical",
+  "Cleaning Services",
+  "Salons & Spas",
+  "Manufacturing",
+  "Warehousing",
+  "Convenience Stores",
+  "Veterinary Clinics",
+  "Home Health",
+  "Property Management",
+  "Landscaping",
+  "Roofing",
+  "Catering",
+  "Bakeries",
+  "Car Washes",
+  "Janitorial Services",
+  "Distribution Companies",
 ];
 
 const costRows = [
@@ -78,10 +101,27 @@ export default function Home() {
 
         <section className="industry-band" aria-label="Industries ExpenseMargin is built for">
           <div className="industry-copy">
-            <span>Built for growing businesses around the world that buy from suppliers every month.</span>
+            <span>Built for businesses that buy from suppliers and manage recurring costs every month.</span>
           </div>
-          <div className="industry-list">
-            {industries.map((industry) => <span key={industry}>{industry}</span>)}
+          <div className="industry-list" style={{ gap: 10 }}>
+            {industries.map((industry) => (
+              <span
+                key={industry}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "7px 11px",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 999,
+                  background: "#fff",
+                  color: "#475467",
+                  fontSize: 12,
+                  fontWeight: 600,
+                }}
+              >
+                {industry}
+              </span>
+            ))}
           </div>
         </section>
 
