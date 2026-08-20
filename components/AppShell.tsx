@@ -33,7 +33,10 @@ export async function AppShell({ children, active }: { children: React.ReactNode
         <div className="side-footer">
           <div>Track expenses. Protect margins.</div>
           {context && <div style={{marginTop:8}}>{context.plan.toUpperCase()} plan</div>}
-          <div style={{ marginTop: 8, opacity: .7 }}>v{APP_VERSION}</div>
+          <div style={{marginTop:8,opacity:.7}}>v{APP_VERSION}</div>
+          <form action="/auth/signout" method="post" style={{marginTop:12}}>
+            <button type="submit" className="btn" style={{width:"100%"}}>Sign out</button>
+          </form>
         </div>
       </aside>
       <main className="main">
