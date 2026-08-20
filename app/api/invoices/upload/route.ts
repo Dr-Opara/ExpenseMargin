@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getOrganizationContext, planInvoiceLimit } from "@/lib/data/context";
+import { recordAuditEvent } from "@/lib/audit";
 
 const MAX_FILE_SIZE = 12 * 1024 * 1024;
 const allowedTypes = new Set(["application/pdf", "image/png", "image/jpeg"]);
@@ -62,5 +64,14 @@ export async function POST(request: Request) {
   }
 
   await supabase.from("invoices").update({ storage_path: path, status: "queued" }).eq("id", invoice.id);
+  const admin = createAdminClient();
+  await recordAuditEvent(admin, {
+    organizationId: context.organizationId,
+    userId: user.id,
+    eventType: "invoice.uploaded",
+    entityType: "invoice",
+    entityId: invoice.id,
+    metadata: { filename: safeName, mimeType: file.type, size: file.size, plan: context.plan },
+  });
   return NextResponse.json({ invoiceId: invoice.id, status: "queued" }, { status: 201 });
 }

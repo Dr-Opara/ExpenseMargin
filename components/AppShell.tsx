@@ -9,6 +9,7 @@ const links = [
   ["Products", "/products"],
   ["Alerts", "/alerts"],
   ["Review", "/review"],
+  ["Activity", "/activity"],
   ["Billing", "/billing"],
   ["Settings", "/settings"],
 ];
