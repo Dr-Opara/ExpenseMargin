@@ -1,39 +1,39 @@
-.brand-rabbit {
-  width: 38px;
-  height: 38px;
+.brand {
+  display: inline-flex;
+  align-items: center;
   flex: 0 0 auto;
+}
+
+.brand-logo,
+.brand-icon {
+  display: block;
+  width: auto;
   object-fit: contain;
 }
 
-.brand-wordmark {
-  display: inline-flex;
-  align-items: baseline;
-  letter-spacing: -0.035em;
-  font-weight: 760;
-  color: #0d1b2a;
-}
-
-.brand-margin {
-  color: #2e7d32;
-}
-
-.app-brand .brand-rabbit {
-  width: 40px;
+.brand-logo {
   height: 40px;
+  max-width: 222px;
 }
 
-.auth-card .brand-rabbit {
-  width: 42px;
-  height: 42px;
+.brand-icon {
+  width: 38px;
+  height: 36px;
+}
+
+.app-brand .brand-logo {
+  height: 38px;
+  max-width: 210px;
+}
+
+.auth-card .brand-logo {
+  height: 44px;
+  max-width: 244px;
 }
 
 @media (max-width: 720px) {
-  .landing-nav .brand-wordmark {
-    font-size: 17px;
-  }
-
-  .landing-nav .brand-rabbit {
-    width: 34px;
+  .landing-nav .brand-logo {
     height: 34px;
+    max-width: 188px;
   }
 }
