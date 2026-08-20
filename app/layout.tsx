@@ -16,9 +16,9 @@ export const metadata: Metadata = {
   applicationName: "ExpenseMargin",
   keywords: ["supplier cost intelligence", "invoice analysis", "small business", "cost monitoring", "margin protection", "procurement analytics"],
   icons: {
-    icon: "/brand/expensemargin-rabbit.webp",
-    shortcut: "/brand/expensemargin-rabbit.webp",
-    apple: "/brand/expensemargin-rabbit.webp",
+    icon: "/brand/expensemargin-icon.png",
+    shortcut: "/brand/expensemargin-icon.png",
+    apple: "/brand/expensemargin-icon.png",
   },
   openGraph: {
     type: "website",
