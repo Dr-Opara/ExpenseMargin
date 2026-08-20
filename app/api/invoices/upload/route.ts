@@ -21,57 +21,46 @@ export async function POST(request: Request) {
   if (!allowedTypes.has(file.type)) return NextResponse.json({ error: "Unsupported file type" }, { status: 415 });
   if (file.size > MAX_FILE_SIZE) return NextResponse.json({ error: "File exceeds 12 MB limit" }, { status: 413 });
 
-  const monthStart = new Date();
-  monthStart.setUTCDate(1);
-  monthStart.setUTCHours(0, 0, 0, 0);
-  const { count } = await supabase
-    .from("invoices")
-    .select("id", { count: "exact", head: true })
-    .eq("organization_id", context.organizationId)
-    .gte("created_at", monthStart.toISOString());
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const admin = createAdminClient();
+  const { data: invoiceId, error: invoiceError } = await admin.rpc("create_invoice_with_plan_limit", {
+    target_org: context.organizationId,
+    p_original_filename: safeName,
+    p_mime_type: file.type,
+  });
 
-  const limit = planInvoiceLimit(context.plan);
-  if ((count ?? 0) >= limit) {
-    return NextResponse.json({
-      error: `Your ${context.plan} plan includes ${limit} invoices per month. Upgrade to continue.`,
-      code: "plan_limit_reached",
-    }, { status: 402 });
+  if (invoiceError || !invoiceId) {
+    if (invoiceError?.message?.includes("plan_limit_reached")) {
+      const limit = planInvoiceLimit(context.plan);
+      return NextResponse.json({
+        error: `Your ${context.plan} plan includes ${limit} invoices per month. Upgrade to continue.`,
+        code: "plan_limit_reached",
+      }, { status: 402 });
+    }
+    console.error("Could not reserve invoice upload", invoiceError);
+    return NextResponse.json({ error: "Could not create invoice record" }, { status: 500 });
   }
 
-  const { data: invoice, error: invoiceError } = await supabase
-    .from("invoices")
-    .insert({
-      organization_id: context.organizationId,
-      status: "uploaded",
-      original_filename: file.name,
-      mime_type: file.type,
-    })
-    .select("id")
-    .single();
-  if (invoiceError || !invoice) return NextResponse.json({ error: "Could not create invoice record" }, { status: 500 });
-
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const path = `${context.organizationId}/${invoice.id}/${safeName}`;
+  const path = `${context.organizationId}/${invoiceId}/${safeName}`;
   const bytes = await file.arrayBuffer();
-  const { error: uploadError } = await supabase.storage.from("invoices").upload(path, bytes, {
+  const { error: uploadError } = await admin.storage.from("invoices").upload(path, bytes, {
     contentType: file.type,
     upsert: false,
   });
 
   if (uploadError) {
-    await supabase.from("invoices").update({ status: "failed", error_message: uploadError.message }).eq("id", invoice.id);
+    await admin.from("invoices").update({ status: "failed", error_message: uploadError.message }).eq("id", invoiceId);
     return NextResponse.json({ error: "Could not store invoice" }, { status: 500 });
   }
 
-  await supabase.from("invoices").update({ storage_path: path, status: "queued" }).eq("id", invoice.id);
-  const admin = createAdminClient();
+  await admin.from("invoices").update({ storage_path: path, status: "queued" }).eq("id", invoiceId);
   await recordAuditEvent(admin, {
     organizationId: context.organizationId,
     userId: user.id,
     eventType: "invoice.uploaded",
     entityType: "invoice",
-    entityId: invoice.id,
+    entityId: invoiceId,
     metadata: { filename: safeName, mimeType: file.type, size: file.size, plan: context.plan },
   });
-  return NextResponse.json({ invoiceId: invoice.id, status: "queued" }, { status: 201 });
+  return NextResponse.json({ invoiceId, status: "queued" }, { status: 201 });
 }

@@ -3,6 +3,21 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
+function integrationStatus() {
+  return {
+    openai: Boolean(process.env.OPENAI_API_KEY),
+    resend: Boolean(process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL),
+    stripe: Boolean(
+      process.env.STRIPE_SECRET_KEY &&
+      process.env.STRIPE_WEBHOOK_SECRET &&
+      process.env.STRIPE_BUSINESS_PRICE_ID &&
+      process.env.STRIPE_PRO_PRICE_ID &&
+      process.env.STRIPE_SCALE_PRICE_ID
+    ),
+    cron: Boolean(process.env.CRON_SECRET),
+  };
+}
+
 export async function GET() {
   const required = [
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -12,12 +27,14 @@ export async function GET() {
   ];
 
   const missing = required.filter((key) => !process.env[key]);
+  const integrations = integrationStatus();
   if (missing.length) {
     return NextResponse.json({
       status: "not_ready",
       service: "ExpenseMargin",
       configured: false,
       database: false,
+      integrations,
       timestamp: new Date().toISOString(),
     }, { status: 503 });
   }
@@ -32,6 +49,7 @@ export async function GET() {
       service: "ExpenseMargin",
       configured: true,
       database: true,
+      integrations,
       timestamp: new Date().toISOString(),
     });
   } catch {
@@ -40,6 +58,7 @@ export async function GET() {
       service: "ExpenseMargin",
       configured: true,
       database: false,
+      integrations,
       timestamp: new Date().toISOString(),
     }, { status: 503 });
   }

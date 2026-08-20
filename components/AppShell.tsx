@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Brand } from "@/components/Brand";
 import { getOrganizationContext } from "@/lib/data/context";
 import { PLANS } from "@/lib/billing/plans";
 import { APP_VERSION } from "@/lib/version";
@@ -29,10 +30,7 @@ export async function AppShell({ children, active }: { children: React.ReactNode
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <Link href="/dashboard" className="brand app-brand">
-          <span className="brand-mark">EM</span>
-          <span>ExpenseMargin</span>
-        </Link>
+        <Brand href="/dashboard" className="app-brand" />
 
         <nav className="side-nav">
           <Link href="/dashboard" className={`side-link ${active === "Dashboard" ? "active" : ""}`}>Dashboard</Link>

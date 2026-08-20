@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { Brand } from "@/components/Brand";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SignupPage() {
@@ -39,7 +40,7 @@ export default function SignupPage() {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link>
+        <Brand />
         <h1>Create your account</h1>
         <p>Start free with up to 5 supplier invoices per month.</p>
         <form onSubmit={submit} className="auth-form">

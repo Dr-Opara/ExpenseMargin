@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+import "./brand.css";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://expensemargin.vercel.app";
 
@@ -11,9 +12,14 @@ export const metadata: Metadata = {
     default: "ExpenseMargin — Track expenses. Protect margins.",
     template: "%s | ExpenseMargin",
   },
-  description: "AI-powered supplier cost intelligence for small businesses. Detect supplier price increases, new fees, and shrinkflation before they erode your margins.",
+  description: "Supplier cost intelligence for small businesses. Detect supplier price increases, new fees, and shrinkflation before they erode your margins.",
   applicationName: "ExpenseMargin",
   keywords: ["supplier cost intelligence", "invoice analysis", "small business", "cost monitoring", "margin protection", "procurement analytics"],
+  icons: {
+    icon: "/brand/expensemargin-rabbit.webp",
+    shortcut: "/brand/expensemargin-rabbit.webp",
+    apple: "/brand/expensemargin-rabbit.webp",
+  },
   openGraph: {
     type: "website",
     url: appUrl,
@@ -24,7 +30,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ExpenseMargin — Track expenses. Protect margins.",
-    description: "AI-powered supplier cost intelligence for small businesses.",
+    description: "Supplier cost intelligence for small businesses.",
   },
 };
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { Brand } from "@/components/Brand";
 import { createClient } from "@/lib/supabase/client";
 
 export default function ForgotPasswordPage() {
@@ -26,7 +27,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="auth-wrap"><div className="auth-card">
-      <Link href="/" className="brand"><span className="brand-mark">EM</span><span>ExpenseMargin</span></Link>
+      <Brand />
       <h1>Reset your password</h1>
       <p>Enter the email address associated with your ExpenseMargin account.</p>
       <form onSubmit={submit} className="auth-form">

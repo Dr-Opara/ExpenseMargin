@@ -17,7 +17,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   return (
     <AppShell active="Settings">
       <div className="page">
-        <div className="page-head"><div><h1>Settings</h1><p>Manage your business profile, alert recipient, and production integrations.</p></div><span className="badge good">{data.context.role}</span></div>
+        <div className="page-head"><div><h1>Settings</h1><p>Manage your business profile, alerts, integrations, and workspace data.</p></div><span className="badge good">{data.context.role}</span></div>
         {params.saved === "1" && <div className="form-success" style={{ marginBottom: 16 }}>Settings saved.</div>}
         {params.error && <div className="form-error" style={{ marginBottom: 16 }}>Settings could not be saved. Check the submitted values and try again.</div>}
 
@@ -39,10 +39,18 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               <div className="panel-head" style={{ padding: 0 }}><div><strong>OpenAI</strong><div className="metric-note">Invoice extraction</div></div>{integrationBadge(data.integrations.openai)}</div>
               <div className="panel-head" style={{ padding: 0 }}><div><strong>Resend</strong><div className="metric-note">Cost alert email delivery</div></div>{integrationBadge(data.integrations.resend)}</div>
               <div className="panel-head" style={{ padding: 0 }}><div><strong>Stripe</strong><div className="metric-note">Subscriptions and billing portal</div></div>{integrationBadge(data.integrations.stripe)}</div>
+              <div className="panel-head" style={{ padding: 0 }}><div><strong>Background processing</strong><div className="metric-note">Invoice processing cron</div></div>{integrationBadge(data.integrations.cron)}</div>
               <div className="metric-note">Secrets are configured in the hosting environment and are never displayed in ExpenseMargin.</div>
             </div>
           </section>
         </div>
+
+        {canEdit && (
+          <section className="panel">
+            <div className="panel-head"><div><h2>Workspace data</h2><span className="panel-subtitle">Portability and administrative access</span></div><a className="btn" href="/api/account/export">Export workspace data</a></div>
+            <div style={{ padding: 20, color: "#667085", fontSize: 13, lineHeight: 1.6 }}>Download a JSON export of organization settings, supplier and product history, invoices and line items, alerts, reviews, notification history, and audit events. Exports are generated on demand and are not cached.</div>
+          </section>
+        )}
 
         <section className="panel">
           <div className="panel-head"><h2>Recent notification delivery</h2><span className="metric-note">Latest 10</span></div>

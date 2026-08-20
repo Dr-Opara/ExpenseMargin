@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { planFromPriceId, type PlanId } from "@/lib/billing/plans";
+import { isPaidPlan, planFromPriceId, type PlanId } from "@/lib/billing/plans";
 import { verifyStripeSignature } from "@/lib/billing/stripe";
 import { recordAuditEvent } from "@/lib/audit";
 
@@ -34,8 +34,8 @@ async function syncSubscription(admin: ReturnType<typeof createAdminClient>, obj
   const customerId = asString(object?.customer);
   const subscriptionId = asString(object?.subscription) || (object?.object === "subscription" ? asString(object?.id) : null);
   const priceId = asString(object?.items?.data?.[0]?.price?.id) || null;
-  const metadataPlan = asString(object?.metadata?.plan) as PlanId | null;
-  let plan: PlanId = metadataPlan === "business" || metadataPlan === "pro" ? metadataPlan : (planFromPriceId(priceId) ?? "free");
+  const metadataPlan = asString(object?.metadata?.plan);
+  let plan: PlanId = metadataPlan && isPaidPlan(metadataPlan) ? metadataPlan : (planFromPriceId(priceId) ?? "free");
   const status = forcedStatus || asString(object?.status) || "active";
   if (["canceled", "unpaid", "incomplete_expired"].includes(status)) plan = "free";
 
