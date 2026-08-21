@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const protectedPaths = ["/dashboard", "/invoices", "/suppliers", "/products", "/alerts", "/review", "/activity", "/billing", "/settings", "/onboarding"];
+const protectedPaths = ["/dashboard", "/invoices", "/suppliers", "/products", "/alerts", "/review", "/activity", "/billing", "/settings", "/onboarding", "/admin"];
 
 export async function middleware(request: NextRequest) {
   const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
