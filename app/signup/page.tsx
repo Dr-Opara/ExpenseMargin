@@ -17,7 +17,8 @@ export default function SignupPage() {
     setMessage("");
     const data = new FormData(event.currentTarget);
     const supabase = createClient();
-    const emailRedirectTo = `${window.location.origin}/auth/callback?next=/onboarding`;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://expensemargin.com";
+    const emailRedirectTo = `${appUrl}/auth/callback?next=/onboarding`;
     const result = await supabase.auth.signUp({
       email: String(data.get("email") || ""),
       password: String(data.get("password") || ""),
@@ -42,7 +43,7 @@ export default function SignupPage() {
       <div className="auth-card">
         <Brand />
         <h1>Create your account</h1>
-        <p>Start free with up to 5 supplier invoices per month.</p>
+        <p>Create your ExpenseMargin account, then choose the plan that fits your invoice volume.</p>
         <form onSubmit={submit} className="auth-form">
           <label>Name<input name="name" required autoComplete="name" /></label>
           <label>Email<input name="email" type="email" required autoComplete="email" /></label>
