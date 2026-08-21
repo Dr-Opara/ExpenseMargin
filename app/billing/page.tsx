@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { getBillingData } from "@/lib/data/billing";
-import { PLANS, type PlanId } from "@/lib/billing/plans";
+import { PLANS, PUBLIC_PLAN_IDS, type PlanId } from "@/lib/billing/plans";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ function planStatusLabel(status: string) {
   if (status === "active" || status === "trialing") return "Active";
   if (status === "past_due") return "Payment issue";
   if (status === "canceled") return "Canceled";
-  return "Free";
+  return "No active plan";
 }
 
 export default async function BillingPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -30,23 +30,23 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
           <div className="panel-head"><h2>This month</h2><strong>{data.used} / {data.limit} invoices</strong></div>
           <div style={{padding:20}}>
             <div className="usage-bar"><span style={{width:`${usagePercent}%`}} /></div>
-            <div className="metric-note">Your {PLANS[currentPlan].name} plan resets invoice usage at the start of each calendar month.</div>
+            <div className="metric-note">{currentPlan === "free" ? "Choose a plan to begin processing invoices." : `Your ${PLANS[currentPlan].name} plan resets invoice usage at the start of each calendar month.`}</div>
             {data.cancelAtPeriodEnd && data.currentPeriodEnd && <div className="form-error" style={{marginTop:14}}>Your paid plan is scheduled to end on {new Date(data.currentPeriodEnd).toLocaleDateString()}.</div>}
           </div>
         </section>
 
         <div className="pricing-grid">
-          {(Object.keys(PLANS) as PlanId[]).map((planId) => {
+          {PUBLIC_PLAN_IDS.map((planId) => {
             const plan = PLANS[planId];
             const current = planId === currentPlan;
             return (
-              <section className={`metric pricing-card ${current ? "selected" : ""}`} key={planId}>
-                <div className="metric-label">{plan.name}</div>
+              <section className={`metric pricing-card ${current || planId === "pro" ? "selected" : ""}`} key={planId}>
+                <div className="metric-label">{plan.name}{planId === "pro" ? " · Most popular" : ""}</div>
                 <div className="plan-price">${plan.monthlyPrice}<small>/month</small></div>
                 <p>{plan.description}</p>
                 <strong>{plan.invoiceLimit} invoices/month</strong>
                 <div style={{marginTop:18}}>
-                  {current ? <span className="badge good">Current plan</span> : planId === "free" ? <span className="metric-note">Free plan activates when no paid subscription is active.</span> : data.canManageBilling ? (
+                  {current ? <span className="badge good">Current plan</span> : data.canManageBilling ? (
                     <form action="/api/billing/checkout" method="post">
                       <input type="hidden" name="plan" value={planId} />
                       <button className="btn primary" type="submit">Choose {plan.name}</button>
@@ -57,6 +57,8 @@ export default async function BillingPage({ searchParams }: { searchParams: Prom
             );
           })}
         </div>
+
+        <div className="metric-note" style={{marginTop:14}}>Need more than 200 invoices per month? Contact sales@expensemargin.com for higher-volume pricing.</div>
 
         {data.context.stripeCustomerId && data.canManageBilling && (
           <section className="panel"><div className="panel-head"><div><h2>Manage subscription</h2><div className="metric-note">Update payment details, cancel, or view invoices in Stripe's secure customer portal.</div></div><form action="/api/billing/portal" method="post"><button className="btn" type="submit">Open billing portal</button></form></div></section>
