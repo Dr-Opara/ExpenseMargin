@@ -147,7 +147,14 @@ export default function Home() {
         <footer className="marketing-footer">
           <span>© 2026 ExpenseMargin</span>
           <span>Track expenses. Protect margins.</span>
-          <span className="footer-links"><Link href="/pricing">Pricing</Link><Link href="/security">Security</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></span>
+          <span className="footer-links">
+            <Link href="/pricing">Pricing</Link>
+            <Link href="/security">Security</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
+            <a href="https://x.com/expensemargin" target="_blank" rel="noreferrer">X @expensemargin</a>
+            <a href="https://www.linkedin.com/company/expensemargin" target="_blank" rel="noreferrer">LinkedIn ExpenseMargin</a>
+          </span>
         </footer>
       </div>
     </main>
