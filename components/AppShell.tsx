@@ -12,6 +12,7 @@ const navGroups = [
       ["Suppliers", "/suppliers"],
       ["Products", "/products"],
       ["Alerts", "/alerts"],
+      ["Insights", "/insights"],
     ],
   },
   {
