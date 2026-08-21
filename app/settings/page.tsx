@@ -19,7 +19,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         <div className="page-head">
           <div>
             <h1>Settings</h1>
-            <p>Manage your business profile, notifications, billing, and workspace data.</p>
+            <p>Manage your business profile, notifications, billing, and cost-intelligence preferences.</p>
           </div>
           <span className="badge good">{data.context.role}</span>
         </div>
@@ -38,6 +38,20 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 <input name="notify_cost_alerts" type="checkbox" defaultChecked={data.organization.notifyCostAlerts} disabled={!canEdit} style={{ width: "auto" }} />
                 <span>Email me when meaningful supplier cost increases are confirmed.</span>
               </label>
+
+              <div style={{borderTop:"1px solid #e5e7eb",paddingTop:18,marginTop:4}}>
+                <div style={{fontWeight:700,marginBottom:4}}>Growth intelligence controls</div>
+                <div className="metric-note" style={{marginBottom:14}}>Available on Growth and Multi-Location plans.</div>
+                <label>Cost-change threshold (%)
+                  <input name="cost_change_threshold_pct" type="number" min="0.5" max="100" step="0.5" defaultValue={data.organization.costChangeThresholdPct} disabled={!canEdit || !data.intelligenceSettingsEnabled} />
+                </label>
+                <label style={{ display: "flex", gap: 10, alignItems: "center", flexDirection: "row" }}>
+                  <input name="weekly_summary_enabled" type="checkbox" defaultChecked={data.organization.weeklySummaryEnabled} disabled={!canEdit || !data.weeklySummaryEnabledForPlan} style={{ width: "auto" }} />
+                  <span>Send a weekly cost summary to the notification email.</span>
+                </label>
+                {!data.intelligenceSettingsEnabled && <Link href="/billing" className="text-link">Upgrade to Growth to customize intelligence settings →</Link>}
+              </div>
+
               {canEdit ? <button className="btn primary" type="submit">Save settings</button> : <div className="metric-note">Only owners and admins can change organization settings.</div>}
             </form>
           </section>
@@ -51,7 +65,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               </div>
               {activePlan && (
                 <div className="metric-note">
-                  {activePlan.invoiceLimit.toLocaleString()} invoices per month · ${activePlan.monthlyPrice}/month
+                  {activePlan.invoiceLimit.toLocaleString()} invoices per month · {activePlan.locationLabel} · ${activePlan.monthlyPrice}/month
                 </div>
               )}
               {!activePlan && <div className="metric-note">Choose a plan to begin processing supplier invoices.</div>}
@@ -60,14 +74,14 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </section>
         </div>
 
-        {canEdit && (
+        {canEdit && data.intelligenceSettingsEnabled && (
           <section className="panel">
             <div className="panel-head">
-              <div><h2>Workspace data</h2><span className="panel-subtitle">Portability and administrative access</span></div>
-              <a className="btn" href="/api/account/export">Export workspace data</a>
+              <div><h2>Data export</h2><span className="panel-subtitle">Growth and Multi-Location capability</span></div>
+              <a className="btn" href="/api/export">Export invoice intelligence CSV</a>
             </div>
             <div style={{ padding: 20, color: "#667085", fontSize: 13, lineHeight: 1.6 }}>
-              Download a JSON export of your organization settings, supplier and product history, invoices and line items, alerts, reviews, notification history, and audit events. Exports are generated on demand and are not cached.
+              Export structured invoice line items, supplier information, normalized quantities, unit prices, totals, and location references for your own analysis.
             </div>
           </section>
         )}
