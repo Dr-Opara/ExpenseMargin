@@ -6,6 +6,7 @@ import { PLANS, PUBLIC_PLAN_IDS } from "@/lib/billing/plans";
 export const metadata: Metadata = {
   title: "Pricing — ExpenseMargin",
   description: "Affordable supplier cost intelligence for small businesses. Plans start at $19 per month with no per-user pricing.",
+  alternates: { canonical: "/pricing" },
 };
 
 export default function PricingPage() {
