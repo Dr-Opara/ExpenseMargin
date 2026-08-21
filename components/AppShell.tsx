@@ -17,6 +17,7 @@ const navGroups = [
   {
     label: "Operations",
     links: [
+      ["Locations", "/locations"],
       ["Review", "/review"],
       ["Activity", "/activity"],
     ],
