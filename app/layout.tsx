@@ -27,9 +27,6 @@ export const metadata: Metadata = {
     "invoice analysis software",
     "cost intelligence software",
   ],
-  alternates: {
-    canonical: appUrl,
-  },
   robots: {
     index: true,
     follow: true,
@@ -113,10 +110,12 @@ const structuredData = [
     description:
       "Supplier cost intelligence software that compares recurring invoices, identifies price changes, fees and surcharges, and estimates margin impact.",
     offers: {
-      "@type": "Offer",
-      price: "0",
+      "@type": "AggregateOffer",
+      lowPrice: "19",
+      highPrice: "99",
       priceCurrency: "USD",
-      description: "Free plan available",
+      offerCount: "4",
+      url: `${appUrl}/pricing`,
     },
   },
 ];
