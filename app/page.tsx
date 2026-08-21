@@ -139,6 +139,19 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="home-section" aria-labelledby="seo-solutions-heading" style={{paddingTop:0}}>
+          <div className="section-heading">
+            <span className="overline">Cost intelligence tools</span>
+            <h2 id="seo-solutions-heading">Find the supplier cost changes that affect your business.</h2>
+            <p>Explore how ExpenseMargin helps small businesses compare invoices, monitor recurring costs, and catch supplier price increases.</p>
+          </div>
+          <div className="steps" style={{marginTop:36}}>
+            <div className="step"><span>Track</span><h3><Link href="/supplier-price-tracking">Supplier price tracking</Link></h3><p>Detect supplier price increases, new fees, surcharges, and quantity changes from recurring invoices.</p></div>
+            <div className="step"><span>Analyze</span><h3><Link href="/invoice-cost-analysis">Invoice cost analysis</Link></h3><p>Turn invoice history into structured cost comparisons without maintaining another spreadsheet.</p></div>
+            <div className="step"><span>Monitor</span><h3><Link href="/small-business-cost-monitoring">Small-business cost monitoring</Link></h3><p>Watch recurring supplier expenses and understand which cost changes are putting pressure on margin.</p></div>
+          </div>
+        </section>
+
         <section className="simple-cta">
           <div><span className="overline">Start with your next invoice</span><h2>Turn supplier paperwork into cost visibility.</h2></div>
           <Link className="btn primary" href="/signup">Create your account</Link>
