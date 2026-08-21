@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getOrganizationContext } from "@/lib/data/context";
+import { hasEntitlement } from "@/lib/billing/plans";
 
 export async function getSettingsData() {
   const context = await getOrganizationContext();
@@ -9,7 +10,7 @@ export async function getSettingsData() {
   const [{ data: organization }, { data: deliveries }] = await Promise.all([
     supabase
       .from("organizations")
-      .select("id,name,industry,notification_email,notify_cost_alerts,timezone")
+      .select("id,name,industry,notification_email,notify_cost_alerts,timezone,cost_change_threshold_pct,weekly_summary_enabled")
       .eq("id", context.organizationId)
       .single(),
     supabase
@@ -24,6 +25,8 @@ export async function getSettingsData() {
 
   return {
     context,
+    intelligenceSettingsEnabled: hasEntitlement(context.plan, "custom_thresholds"),
+    weeklySummaryEnabledForPlan: hasEntitlement(context.plan, "weekly_summary"),
     organization: {
       id: organization.id,
       name: organization.name,
@@ -31,6 +34,8 @@ export async function getSettingsData() {
       notificationEmail: organization.notification_email ?? "",
       notifyCostAlerts: organization.notify_cost_alerts !== false,
       timezone: organization.timezone ?? "UTC",
+      costChangeThresholdPct: Number(organization.cost_change_threshold_pct ?? 5),
+      weeklySummaryEnabled: organization.weekly_summary_enabled === true,
     },
     deliveries: (deliveries ?? []).map((row: any) => ({
       id: row.id,
