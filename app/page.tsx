@@ -53,7 +53,7 @@ export default function Home() {
           </div>
           <div className="nav-actions">
             <Link className="nav-signin" href="/login">Sign in</Link>
-            <Link className="btn primary" href="/signup">Start free</Link>
+            <Link className="btn primary" href="/pricing">View plans</Link>
           </div>
         </nav>
 
@@ -63,10 +63,10 @@ export default function Home() {
             <h1>Know when supplier costs change.</h1>
             <p>ExpenseMargin compares recurring supplier invoices, flags meaningful cost increases, and shows what those changes could mean for your margin.</p>
             <div className="hero-actions">
-              <Link className="btn primary" href="/signup">Start free</Link>
-              <Link className="text-link" href="/pricing">View pricing →</Link>
+              <Link className="btn primary" href="/pricing">View plans</Link>
+              <Link className="text-link" href="/signup">Create account →</Link>
             </div>
-            <div className="hero-note">Start with 5 invoices per month free.</div>
+            <div className="hero-note">Paid plans start at $19/month. No per-user pricing.</div>
           </div>
 
           <div className="product-frame" aria-label="ExpenseMargin cost change preview">
@@ -154,7 +154,7 @@ export default function Home() {
 
         <section className="simple-cta">
           <div><span className="overline">Start with your next invoice</span><h2>Turn supplier paperwork into cost visibility.</h2></div>
-          <Link className="btn primary" href="/signup">Create your account</Link>
+          <Link className="btn primary" href="/pricing">Choose a plan</Link>
         </section>
 
         <footer
