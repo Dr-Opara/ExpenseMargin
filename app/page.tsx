@@ -144,16 +144,26 @@ export default function Home() {
           <Link className="btn primary" href="/signup">Create your account</Link>
         </section>
 
-        <footer className="marketing-footer">
-          <span>© 2026 ExpenseMargin</span>
-          <span>Track expenses. Protect margins.</span>
-          <span className="footer-links">
+        <footer
+          className="marketing-footer"
+          style={{ minHeight: 118, fontSize: 15, gap: 34, padding: "18px 0" }}
+        >
+          <span style={{ fontWeight: 600 }}>© 2026 ExpenseMargin</span>
+          <span style={{ fontSize: 16, fontWeight: 600 }}>Track expenses. Protect margins.</span>
+          <span className="footer-links" style={{ gap: 24, alignItems: "center", fontSize: 15, fontWeight: 600 }}>
             <Link href="/pricing">Pricing</Link>
             <Link href="/security">Security</Link>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
             <a href="https://x.com/expensemargin" target="_blank" rel="noreferrer">X @expensemargin</a>
-            <a href="https://www.linkedin.com/company/expensemargin" target="_blank" rel="noreferrer">LinkedIn ExpenseMargin</a>
+            <a
+              href="https://www.linkedin.com/company/expensemargin"
+              target="_blank"
+              rel="noreferrer"
+              style={{ border: "1px solid #d0d5dd", borderRadius: 7, padding: "8px 11px" }}
+            >
+              LinkedIn ExpenseMargin
+            </a>
           </span>
         </footer>
       </div>
