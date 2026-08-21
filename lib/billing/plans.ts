@@ -155,9 +155,9 @@ export const PLANS: Record<PlanId, PlanDefinition> = {
 };
 
 const PRICE_IDS: Record<PaidPlanId, string> = {
-  business: process.env.STRIPE_STARTER_PRICE_ID || "price_1U6sYJC0bQpEJa89lEgE5PPD",
-  pro: process.env.STRIPE_GROWTH_PRICE_ID || "price_1U6sYQC0bQpEJa89YLCW2MhQ",
-  scale_plus: process.env.STRIPE_MULTI_LOCATION_PRICE_ID || process.env.STRIPE_SCALE_PLUS_PRICE_ID || "price_1U6sYXC0bQpEJa89gY3lLxyu",
+  business: process.env.STRIPE_STARTER_PRICE_ID_V2 || "price_1U6sYJC0bQpEJa89lEgE5PPD",
+  pro: process.env.STRIPE_GROWTH_PRICE_ID_V2 || "price_1U6sYQC0bQpEJa89YLCW2MhQ",
+  scale_plus: process.env.STRIPE_MULTI_LOCATION_PRICE_ID || "price_1U6sYXC0bQpEJa89gY3lLxyu",
 };
 
 export function isPaidPlan(value: string): value is PaidPlanId {
@@ -170,10 +170,14 @@ export function priceIdForPlan(plan: PaidPlanId): string | null {
 
 export function planFromPriceId(priceId: string | null | undefined): PlanId | null {
   if (!priceId) return null;
-  if (priceId === PRICE_IDS.business || priceId === process.env.STRIPE_BUSINESS_PRICE_ID) return "business";
-  if (priceId === PRICE_IDS.pro || priceId === process.env.STRIPE_PRO_PRICE_ID) return "pro";
+  if (priceId === PRICE_IDS.business || priceId === process.env.STRIPE_STARTER_PRICE_ID || priceId === process.env.STRIPE_BUSINESS_PRICE_ID) return "business";
+  if (priceId === PRICE_IDS.pro) return "pro";
+  if (priceId === PRICE_IDS.scale_plus) return "scale_plus";
   if (
-    priceId === PRICE_IDS.scale_plus ||
+    priceId === process.env.STRIPE_GROWTH_PRICE_ID ||
+    priceId === process.env.STRIPE_PRO_PRICE_ID
+  ) return "pro";
+  if (
     priceId === process.env.STRIPE_SCALE_PRICE_ID ||
     priceId === process.env.STRIPE_SCALE_PRICE_ID_V2 ||
     priceId === process.env.STRIPE_SCALE_PLUS_PRICE_ID
