@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { PLANS } from "@/lib/billing/plans";
 
 export type OrganizationContext = {
   userId: string;
@@ -55,9 +56,9 @@ export async function getOrganizationContext(): Promise<OrganizationContext | nu
 }
 
 export function planInvoiceLimit(plan: OrganizationContext["plan"]): number {
-  if (plan === "scale_plus") return 200;
-  if (plan === "scale") return 100;
-  if (plan === "pro") return 50;
-  if (plan === "business") return 25;
-  return 0;
+  return PLANS[plan]?.invoiceLimit ?? 0;
+}
+
+export function planLocationLimit(plan: OrganizationContext["plan"]): number {
+  return PLANS[plan]?.locationLimit ?? 0;
 }
