@@ -14,6 +14,7 @@ export async function getAdminOverview() {
   monthStart.setUTCHours(0, 0, 0, 0);
 
   const [
+    organizationCount,
     organizations,
     subscriptions,
     invoices,
@@ -21,6 +22,7 @@ export async function getAdminOverview() {
     processingInvoices,
     failedNotifications,
   ] = await Promise.all([
+    admin.from("organizations").select("id", { count: "exact", head: true }),
     admin.from("organizations").select("id,name,industry,created_at,notification_email").order("created_at", { ascending: false }).limit(8),
     admin.from("subscriptions").select("organization_id,plan,status,cancel_at_period_end,current_period_end"),
     admin.from("invoices").select("id", { count: "exact", head: true }).gte("created_at", monthStart.toISOString()),
@@ -33,7 +35,7 @@ export async function getAdminOverview() {
   const mrr = activeSubscriptions.reduce((sum: number, s: any) => sum + (planPrices[s.plan] ?? 0), 0);
 
   return {
-    organizationCount: organizations.count ?? (organizations.data?.length ?? 0),
+    organizationCount: organizationCount.count ?? 0,
     activeSubscriptions: activeSubscriptions.length,
     mrr,
     invoicesThisMonth: invoices.count ?? 0,
