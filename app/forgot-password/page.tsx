@@ -5,6 +5,8 @@ import { FormEvent, useState } from "react";
 import { Brand } from "@/components/Brand";
 import { createClient } from "@/lib/supabase/client";
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://expensemargin.com";
+
 export default function ForgotPasswordPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -16,9 +18,9 @@ export default function ForgotPasswordPage() {
     setError("");
     setMessage("");
     const form = new FormData(event.currentTarget);
-    const email = String(form.get("email") || "");
+    const email = String(form.get("email") || "").trim();
     const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback?next=/update-password`;
+    const redirectTo = `${appUrl.replace(/\/$/, "")}/auth/callback?next=/update-password`;
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
     if (resetError) setError(resetError.message);
     else setMessage("If that email is registered, a password reset link has been sent.");
